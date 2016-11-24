@@ -291,7 +291,6 @@ public class GuiHuanActivity extends BaseActivity {
                                 jsonObject.put("JYRPHONE", jsonObjectJYR.getString("JYRPHONE"));
                                 jsonArray.put(jsonObject);
 //                                jsonObject.put("JYR", userid);
-                                jsonArray.put(jsonObject);
                             }
                             System.out.println("GuiHuanActivity " + jsonArray.toString());
                             RequestParams params = new RequestParams(RFIDUtils.RUKU);

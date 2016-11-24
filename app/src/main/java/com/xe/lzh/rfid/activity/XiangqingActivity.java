@@ -88,8 +88,10 @@ public class XiangqingActivity extends BaseActivity {
     private void doNet() {
         System.out.println("EPC "+EPC);
         RequestParams params = new RequestParams(RFIDUtils.FINDDETAIL);
-        params.addBodyParameter("EPC", "2015-DQ11-Y-3,5164396,341849,");
-        doNetWork(params, 0);
+        params.addBodyParameter("EPC", "2015-DQ11-Y-3,125142908,125142908,");
+        //2011-JX19.17-Y-3,341849,370225446,2007-JX19.17-D30-1q,341849,5164396,2007-JX19.17-D30-21,341849,5164396,2007-JX19.17-D30-2,341849,5164396,
+        //217693,？~T？？1,193250,   "2015-DQ11-Y-3,5164396,341849,
+        doNetWork(params,0);
     }
 
     @Override

@@ -92,7 +92,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="10dp"
                 android:gravity="center"
-                android:text="2001"
+                android:text=""
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="20sp" />
 

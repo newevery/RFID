@@ -20,7 +20,7 @@ import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
 /**
- * Created by Administrator on 2016/9/2 0002.
+ * 暂时无用
  */
 
 @ContentView(R.layout.activity_xiangxixinxi)

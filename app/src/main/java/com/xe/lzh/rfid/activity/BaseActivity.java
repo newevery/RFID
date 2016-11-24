@@ -5,8 +5,11 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -45,7 +48,38 @@ public abstract class BaseActivity extends FragmentActivity implements HttpUtils
 
     public void setting(View view) {
     }
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        // TODO Auto-generated method stub
+        //      Toast.makeText(getApplicationContext(), "操作ing", Toast.LENGTH_SHORT)
+        //              .show();
+        //       Log.i(TAG, "操作ing");
+        resetTime();
+        return super.dispatchTouchEvent(ev);
+    }
+           private int SHOW_ANOTHER_ACTIVITY=1;
+    private void resetTime() {
+        // TODO Auto-generated method stub
+        mHandler.removeMessages(SHOW_ANOTHER_ACTIVITY);//從消息隊列中移除
+        Message msg = mHandler.obtainMessage(SHOW_ANOTHER_ACTIVITY);
+        mHandler.sendMessageDelayed(msg, 1000*60*30);//無操作30分钟后進入屏保
+    }
 
+    private Handler mHandler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            super.handleMessage(msg);
+            if(msg.what==SHOW_ANOTHER_ACTIVITY)
+            {
+                //跳到activity
+                //               Log.i(TAG, "跳到activity");
+                Intent intent=new Intent(BaseActivity.this,LoginActivity.class);
+                startActivity(intent);
+            }
+        }
+    };
     public void settext(String str) {
 
         Date date = new Date();
