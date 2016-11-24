@@ -47,7 +47,7 @@ public class RukuActivity extends BaseActivity {
     ListView lv_data;
     @ViewInject(R.id.rg_ruku)
     RadioGroup rgRuKu;
-   @ViewInject(R.id.et_boxnum)
+    @ViewInject(R.id.et_boxnum)
     EditText etBoxNum;
     @ViewInject(R.id.tv_count)
     TextView tv_count;
@@ -60,12 +60,13 @@ public class RukuActivity extends BaseActivity {
     private boolean startFlag = false;
     private boolean runflag = false;
     private ArrayList<EpcModel> listEPC;
-    private UhfReader uhfReader;
+    private UhfReader uhfReader = null;
     private RfidAdpter rfidAdpter;
     private Thread inventoryThread;
     private int num;
 
-private String type;
+    private String type;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +78,7 @@ private String type;
         lv_data.addHeaderView(view, null, false);
         loginUser_id = (String) SpUtils.get(this, "userid", "1");
         loginUser_name = (String) SpUtils.get(this, "username", "操作人");
-        tv_name.setText("欢迎您，"+loginUser_name);
+        tv_name.setText("欢迎您，" + loginUser_name);
 
         rgRuKu.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -86,7 +87,7 @@ private String type;
                     Toast.makeText(RukuActivity.this, "新加入库", Toast.LENGTH_SHORT).show();
                     type = "1";
                     etBoxNum.setVisibility(View.GONE);
-                }else {
+                } else {
                     Toast.makeText(RukuActivity.this, "整箱入库", Toast.LENGTH_SHORT).show();
                     type = "2";
                     etBoxNum.setVisibility(View.VISIBLE);
@@ -99,7 +100,6 @@ private String type;
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
                 if (isChecked) {
-                    Toast.makeText(RukuActivity.this, "点击了开始", Toast.LENGTH_SHORT).show();
                     uhfReader = UhfReader.getInstance();
                     uhfReader.setOutputPower(num);
                     uhfReader.setWorkArea(1);
@@ -119,7 +119,6 @@ private String type;
                     //初始化声音池
                     Util.initSoundPool(RukuActivity.this);
                 } else {
-                    Toast.makeText(RukuActivity.this, "点击了停止", Toast.LENGTH_SHORT).show();
                     startFlag = false;
                 }
             }
@@ -147,14 +146,14 @@ private String type;
 //        }
 //    }
 
-    @Event(value = {R.id.bt_shanchu, R.id.bt_queding,R.id.bt_qingkong})
+    @Event(value = {R.id.bt_shanchu, R.id.bt_queding, R.id.bt_qingkong})
     private void Click(View view) {
         switch (view.getId()) {
             case R.id.bt_queding:
                 try {
                     if (listEPC.size() > 0) {
 
-                        if ("1".equals(type)){
+                        if ("1".equals(type)) {
                             HashMap<Integer, Boolean> map = rfidAdpter.getHashMap();
                             List<Integer> list = new ArrayList<Integer>();
                             JSONArray jsonArray = new JSONArray();
@@ -166,7 +165,7 @@ private String type;
                             for (int i = list.size() - 1; i >= 0; i--) {
                                 JSONObject jsonObject = new JSONObject();
                                 jsonObject.put("EPC", listEPC.get(list.get(i)).getEPC());
-                                jsonObject.put("CREATOR",loginUser_id);
+                                jsonObject.put("CREATOR", loginUser_id);
                                 jsonObject.put("STATE", "1");
                                 jsonArray.put(jsonObject);
                             }
@@ -175,11 +174,11 @@ private String type;
                             System.out.println("RuKuActivity  " + jsonArray.toString());
                             doNetWork(params, 0);
 
-                        }else {
+                        } else {
                             String boxnum = etBoxNum.getText().toString();
-                            if (boxnum==null||"".equals(boxnum)){
-                                Toast.makeText(RukuActivity.this,"箱号不能为空",Toast.LENGTH_SHORT).show();
-                            }else {
+                            if (boxnum == null || "".equals(boxnum)) {
+                                Toast.makeText(RukuActivity.this, "箱号不能为空", Toast.LENGTH_SHORT).show();
+                            } else {
                                 HashMap<Integer, Boolean> map = rfidAdpter.getHashMap();
                                 List<Integer> list = new ArrayList<Integer>();
                                 JSONArray jsonArray = new JSONArray();
@@ -191,8 +190,8 @@ private String type;
                                 for (int i = list.size() - 1; i >= 0; i--) {
                                     JSONObject jsonObject = new JSONObject();
                                     jsonObject.put("EPC", listEPC.get(list.get(i)).getEPC());
-                                    jsonObject.put("CREATOR",loginUser_id);
-                                    jsonObject.put("BOXNUM",boxnum);
+                                    jsonObject.put("CREATOR", loginUser_id);
+                                    jsonObject.put("BOXNUM", boxnum);
                                     jsonArray.put(jsonObject);
                                 }
                                 RequestParams params = new RequestParams(RFIDUtils.UPDATEBOX);
@@ -212,22 +211,27 @@ private String type;
                 shanchu();
                 break;
             case R.id.bt_qingkong:
-                listEPC.clear();
-                rfidAdpter.notifyDataSetChanged();
+                if (listEPC.size() > 0) {
+                    if (!st_saoma.isChecked()) {
+                        rfidAdpter.selectmap();
+                        rfidAdpter.notifyDataSetChanged();
+                    }
+                }
                 break;
         }
     }
+
     @Override
     protected void onPause() {
         super.onPause();
         if (uhfReader != null) {
             runflag = false;
-            uhfReader.powerOff();
             uhfReader.close();
 
         }
 
     }
+
     @Override
     public void setting(View view) {
         super.setting(view);

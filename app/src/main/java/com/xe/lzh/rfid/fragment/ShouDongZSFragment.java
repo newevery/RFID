@@ -23,6 +23,7 @@ import com.android.hdhe.uhf.reader.UhfReader;
 import com.xe.lzh.rfid.Model.EpcModel;
 import com.xe.lzh.rfid.R;
 import com.xe.lzh.rfid.Utils.HttpUtils;
+import com.xe.lzh.rfid.Utils.RFIDUtils;
 import com.xe.lzh.rfid.Utils.SpUtils;
 import com.xe.lzh.rfid.Utils.Util;
 import com.xe.lzh.rfid.adpter.PanDianListAdapter;
@@ -51,7 +52,7 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
     private Button btZhuiSu, btChongShu, btGuaBi, btChaku;
     private boolean startFlag = false;
     private boolean runflag = false;
-    public UhfReader uhfReader;
+    public UhfReader uhfReader = null;
     private Thread inventoryThread;
     private int num;
 
@@ -95,11 +96,13 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
 
         tv_xuhao = (TextView) viewTianJia.findViewById(R.id.textView2);
         et_epc = (EditText) viewTianJia.findViewById(R.id.editText);
+
+
         tv_tianjia = (TextView) viewTianJia.findViewById(R.id.textView3);
         tv_xuhao.setText(tv_xh++ + "");
-
-        tv_tianjia.setOnClickListener(this);
         editTexts.add(et_epc);
+        tv_tianjia.setOnClickListener(this);
+
         return inflate;
     }
 
@@ -108,15 +111,13 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.textView3:
+                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE); imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 String str = editTexts.get(editTexts.size() - 1).getText().toString();
 //                String str = et_epc.getText().toString();
                 if (!TextUtils.isEmpty(str)) {
                     System.out.println(str);
                     v.setEnabled(false);
                     dhList.add(str);
-                    InputMethodManager imm = (InputMethodManager)
-                            getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     View viewTianJia = LayoutInflater.from(getActivity()).inflate(R.layout.item_zhuisu, null);
                     shouDongZhuiSu.addView(viewTianJia);
                     tv_xuhao = (TextView) viewTianJia.findViewById(R.id.textView2);
@@ -125,6 +126,7 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
                     tv_xuhao.setText(tv_xh++ + "");
                     editTexts.add(et_epc);
                     tv_tianjia.setOnClickListener(this);
+
                 } else {
                     Toast.makeText(getActivity(), "档号不能为空", Toast.LENGTH_SHORT).show();
                 }
@@ -132,25 +134,28 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
 
                 break;
             case R.id.bt_chaku:
-                btChaku.setVisibility(View.GONE);
-                btChongShu.setVisibility(View.VISIBLE);
-                btZhuiSu.setVisibility(View.VISIBLE);
-                btGuaBi.setVisibility(View.GONE);
-                onSuccess("", 0);//测试
-                svZhuiSu.setVisibility(View.GONE);
-                shouDongZS.setVisibility(View.GONE);
-                shouDongZhuiSu.setVisibility(View.GONE);
-                lvZhuiSu.setVisibility(View.VISIBLE);
-                //获取本地输入的档号
-//                for (int i = 0; i < editTexts.size(); i++) {
-//                    String shuiruDh = editTexts.get(i).getText().toString();
-//                    dhList.add(shuiruDh);
-//                    System.out.println("输入 " + shuiruDh);
-//                }
-//                RequestParams params = new RequestParams(RFIDUtils.ZHUISU);
-//                params.addBodyParameter("DH", dhList.toString());
-//                System.out.println("danghao " + dhList.toString());
-//                doNetWork(params, 0);
+                    btChaku.setVisibility(View.GONE);
+                    btChongShu.setVisibility(View.VISIBLE);
+                    btZhuiSu.setVisibility(View.VISIBLE);
+                    btGuaBi.setVisibility(View.GONE);
+//                onSuccess("", 0);//测试
+                    svZhuiSu.setVisibility(View.GONE);
+                    shouDongZS.setVisibility(View.GONE);
+                    shouDongZhuiSu.setVisibility(View.GONE);
+                    lvZhuiSu.setVisibility(View.VISIBLE);
+//                获取本地输入的档号
+                    System.out.println(editTexts.size() + "SSSS");
+
+                    for (int i = 0; i < editTexts.size(); i++) {
+                        String shuiruDh = editTexts.get(i).getText().toString();
+                        dhList.add(shuiruDh);
+                        System.out.println("输入 " + shuiruDh);
+                    }
+
+                    RequestParams params = new RequestParams(RFIDUtils.ZHUISU);
+                    params.addBodyParameter("DH", dhList.toString());
+                    System.out.println("danghao " + dhList.toString());
+                    doNetWork(params, 0);
                 break;
             case R.id.bt_chongshu:
                 btChaku.setVisibility(View.VISIBLE);
@@ -170,14 +175,14 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
                 TextView tv_xuhao2 = (TextView) child.findViewById(R.id.textView2);
                 tv_xuhao2.setText(tv_xh++ + "");
                 TextView tv_tianjia2 = (TextView) child.findViewById(R.id.textView3);
-//                et_epc = (EditText) child.findViewById(R.id.editText);
-//                tv_tianjia = (TextView) child.findViewById(R.id.textView3);
-//                tv_xuhao.setText(tv_xh++ + "");
-//                editTexts.add(et_epc);
+                et_epc = (EditText) child.findViewById(R.id.editText);
+                tv_tianjia = (TextView) child.findViewById(R.id.textView3);
+                tv_xuhao.setText(tv_xh++ + "");
+                editTexts.add(et_epc);
                 tv_tianjia2.setEnabled(true);
                 tv_tianjia2.setOnClickListener(this);
-                svZhuiSu.setVisibility(View.VISIBLE);
 
+                svZhuiSu.setVisibility(View.VISIBLE);
                 shouDongZS.setVisibility(View.VISIBLE);
                 shouDongZhuiSu.setVisibility(View.VISIBLE);
                 lvZhuiSu.setVisibility(View.GONE);
@@ -195,7 +200,6 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
                 btZhuiSu.setVisibility(View.GONE);
                 btGuaBi.setVisibility(View.VISIBLE);
                 List<EpcModel> epcs = new ArrayList<>();
-                Toast.makeText(getActivity(), "未入库", Toast.LENGTH_SHORT).show();
                 for (int i = 0; i < listEPC.size(); i++) {
                     if (Integer.decode(listEPC.get(i).getState()).intValue() != 1) {
                         System.out.println(listEPC.get(i));
@@ -311,7 +315,7 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
         httpUtils.dopost(params, requestcode, getActivity());
         List<KeyValue> bodyParams = params.getBodyParams();
         for (KeyValue k : bodyParams) {
-            System.out.println(" BaseActivity " + k.getValueStr() + "  " + k.key);
+            System.out.println(" PLZS " + k.getValueStr() + "  " + k.key);
         }
         System.out.println("doNetWork " + params.toString());
     }
@@ -321,7 +325,6 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
         super.onDestroy();
         if (uhfReader != null) {
             runflag = false;
-            uhfReader.powerOff();
             uhfReader.close();
         }
     }
@@ -380,13 +383,13 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
                 e.printStackTrace();
             }
         } else {
-            Toast.makeText(getActivity(), "此库内无数据", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "服务器无数据", Toast.LENGTH_LONG).show();
         }
     }
 
 
     @Override
     public void onFailture(Throwable throwable, boolean b, int requestcode) {
-
+        Toast.makeText(getActivity(), "输入档号有误", Toast.LENGTH_SHORT).show();
     }
 }

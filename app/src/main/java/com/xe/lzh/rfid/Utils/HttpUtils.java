@@ -55,7 +55,6 @@ public class HttpUtils {
                 if (loadingDialog != null && loadingDialog.isShowing()) {
                     loadingDialog.dismiss();
                 }
-                Toast.makeText(context,"服务器连接失败",Toast.LENGTH_SHORT).show();
             }
 
             @Override

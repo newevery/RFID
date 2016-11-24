@@ -79,8 +79,6 @@ public class PanDianActivity extends BaseActivity implements DossierAdpter.Selec
     private Boolean Flag = true;
     private int num;
     private String boxNum;
-    private List<String> lst_kh = new ArrayList<String>();
-    private List<DeatailModel> epclist = new ArrayList<>();
     private PanDianListAdapter panDianListAdapter;
 
     @Override
@@ -107,32 +105,30 @@ public class PanDianActivity extends BaseActivity implements DossierAdpter.Selec
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // TODO Auto-generated method stub
                 if (checkedId == R.id.radio_0) {
-                    Toast.makeText(PanDianActivity.this, "按库盘点", Toast.LENGTH_SHORT).show();
+
                     type = "1";
-                    tv1.setText("库号");
+                    tv1.setText("库号:");
                     tv1.setFocusable(true);
                     listEPC.clear();
+                    linearLayout.setVisibility(View.GONE);
                     linearLayout.setVisibility(View.VISIBLE);
-                    tv_kuhao.setHint("点击选择库");
+                    tv_kuhao.setText("");
                     tv_kuhao.setEnabled(true);
-                    tv_kuhao.setFocusableInTouchMode(true);
+                    tv_kuhao.setHint("点击输入或双击选择库");
+
                 }
                 if (checkedId == R.id.radio_2) {
-                    Toast.makeText(PanDianActivity.this, "全库盘点", Toast.LENGTH_SHORT).show();
                     type = "2";
                     linearLayout.setVisibility(View.GONE);
-                    RequestParams params = new RequestParams(RFIDUtils.AKPANDIAN);
-                    params.addBodyParameter("GROUPID", String.valueOf(0));
-                    params.addBodyParameter("FLAG", "0");
-                    System.out.println("按库盘点 库内数据 " + String.valueOf(0));
-                    doNetWork(params, 0);
+
                 }
                 if (checkedId == R.id.radio_3) {
-                    Toast.makeText(PanDianActivity.this, "按箱盘点", Toast.LENGTH_SHORT).show();
                     type = "3";
                     listEPC.clear();
                     panDianListAdapter.notifyDataSetChanged();
+                    linearLayout.setVisibility(View.GONE);
                     linearLayout.setVisibility(View.VISIBLE);
+                    tv_kuhao.setText("");
                     tv_kuhao.setHint("请输入箱号");
                     tv_kuhao.setEnabled(true);
                     tv1.setText("箱号：");
@@ -176,16 +172,19 @@ public class PanDianActivity extends BaseActivity implements DossierAdpter.Selec
                 break;
             case R.id.bt_queding:
                 if (type == "1") {
+                    if (TextUtils.isEmpty(tv_kuhao.getText().toString())) {
+                        Toast.makeText(PanDianActivity.this, "请输入库号", Toast.LENGTH_SHORT).show();
+                    } else {
                     RequestParams params = new RequestParams(RFIDUtils.AKPANDIAN);
                     params.addBodyParameter("GROUPID", tv_kuhao.getText().toString());
                     params.addBodyParameter("FLAG", "1");
                     System.out.println("按库盘点 库内数据 " + String.valueOf(num));
                     doNetWork(params, 0);
-                    Toast.makeText(this, "开始盘点", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "开始盘点", Toast.LENGTH_SHORT).show();}
                 } else if (type == "3") {
                     boxNum = tv_kuhao.getText().toString();
                     if (TextUtils.isEmpty(boxNum)) {
-                        Toast.makeText(PanDianActivity.this, "请输入库号", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PanDianActivity.this, "请输入箱号", Toast.LENGTH_SHORT).show();
                     } else {
                         RequestParams params = new RequestParams(RFIDUtils.AXPANDIAN);
                         params.addBodyParameter("BOXNUM", String.valueOf(boxNum));
@@ -193,6 +192,12 @@ public class PanDianActivity extends BaseActivity implements DossierAdpter.Selec
                         doNetWork(params, 0);
                         Toast.makeText(this, "开始盘点", Toast.LENGTH_SHORT).show();
                     }
+                }else {
+                    RequestParams params = new RequestParams(RFIDUtils.AKPANDIAN);
+                    params.addBodyParameter("GROUPID", String.valueOf(0));
+                    params.addBodyParameter("FLAG", "0");
+                    System.out.println("按库盘点 库内数据 " + String.valueOf(0));
+                    doNetWork(params, 0);
                 }
 
 
@@ -229,6 +234,7 @@ public class PanDianActivity extends BaseActivity implements DossierAdpter.Selec
                 case 0:
                     if (data != null && !"".equals(data)) {
                         try {
+
                             listEPC.clear();
                             JSONArray jsonArray = new JSONArray(data);
                             for (int i = 0; i < jsonArray.length(); i++) {

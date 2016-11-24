@@ -63,7 +63,7 @@ public class GuiHuanActivity extends BaseActivity {
     private boolean startFlag = false;
     private boolean runflag = false;
     private ArrayList<EpcModel> listEPC;
-    private UhfReader uhfReader;
+    private UhfReader uhfReader = null;
     private RfidAdpter rfidAdpter;
     private String epc;
     private String userid;
@@ -83,14 +83,14 @@ public class GuiHuanActivity extends BaseActivity {
 
         loginUser_id = (String) SpUtils.get(this, "userid", "1");
         loginUser_name = (String) SpUtils.get(this, "username", "操作人");
-        tv_name.setText("欢迎您，"+loginUser_name);
+        tv_name.setText("欢迎您，" + loginUser_name);
 
         st_saoma.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
                 if (isChecked) {
-                    Toast.makeText(GuiHuanActivity.this, "点击了开始", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(GuiHuanActivity.this, "点击了开始", Toast.LENGTH_SHORT).show();
                     num = (int) SpUtils.get(GuiHuanActivity.this, "guihuan", 25);
                     lv_data.setAdapter(rfidAdpter);
                     uhfReader = UhfReader.getInstance();
@@ -111,7 +111,7 @@ public class GuiHuanActivity extends BaseActivity {
                     Util.initSoundPool(GuiHuanActivity.this);
                     startFlag = true;
                 } else {
-                    Toast.makeText(GuiHuanActivity.this, "点击了停止", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(GuiHuanActivity.this, "点击了停止", Toast.LENGTH_SHORT).show();
                     startFlag = false;
                 }
             }
@@ -236,7 +236,6 @@ public class GuiHuanActivity extends BaseActivity {
         super.onPause();
         if (uhfReader != null) {
             runflag = false;
-            uhfReader.powerOff();
             uhfReader.close();
         }
     }
@@ -279,11 +278,11 @@ public class GuiHuanActivity extends BaseActivity {
 //                                jsonObject.put("JYR", jieyueren);
                                 jsonObject.put("CREATOR", loginUser_id);
                                 jsonObject.put("STATE", "1");
-                                if (jsonObjectJYR.length()==0||TextUtils.isEmpty(jsonObjectJYR.getString("JYRNAME"))
+                                if (jsonObjectJYR.length() == 0 || TextUtils.isEmpty(jsonObjectJYR.getString("JYRNAME"))
                                         || TextUtils.isEmpty(jsonObjectJYR.getString("JYRNUM"))
                                         || TextUtils.isEmpty(jsonObjectJYR.getString("JYRSEC"))
                                         || TextUtils.isEmpty(jsonObjectJYR.getString("JYRPHONE"))) {
-                                    Toast.makeText(GuiHuanActivity.this,"请登记完整借阅人信息",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(GuiHuanActivity.this, "请登记完整借阅人信息", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
                                 jsonObject.put("JYRNAME", jsonObjectJYR.getString("JYRNAME"));
@@ -299,6 +298,8 @@ public class GuiHuanActivity extends BaseActivity {
                             params.addBodyParameter("data", jsonArray.toString());
                             doNetWork(params, 0);
                             shanchu();
+                        } else {
+                            Toast.makeText(this, "选择归还档案", Toast.LENGTH_SHORT).show();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -307,7 +308,7 @@ public class GuiHuanActivity extends BaseActivity {
                 break;
 
             case R.id.bt_dengjiJYR:
-                AlertDialog.Builder jyrBuilder = new AlertDialog.Builder(this,R.style.Theme_Transparent);
+                AlertDialog.Builder jyrBuilder = new AlertDialog.Builder(this, R.style.Theme_Transparent);
 //                builder.setIcon(R.drawable.ic_launcher);
 //                jyrBuilder.setTitle("归还人登记");
                 LayoutInflater inflater = LayoutInflater.from(this);
@@ -327,10 +328,10 @@ public class GuiHuanActivity extends BaseActivity {
                         String jyrPhone = etJYRPHONE.getText().toString();
                         btjyr.setText(jyrName);
                         try {
-                            jsonObjectJYR.put("JYRNAME", jyrName+"");
-                            jsonObjectJYR.put("JYRNUM", jyrNum+"");
-                            jsonObjectJYR.put("JYRSEC", jyrSec+"");
-                            jsonObjectJYR.put("JYRPHONE", jyrPhone+"");
+                            jsonObjectJYR.put("JYRNAME", jyrName + "");
+                            jsonObjectJYR.put("JYRNUM", jyrNum + "");
+                            jsonObjectJYR.put("JYRSEC", jyrSec + "");
+                            jsonObjectJYR.put("JYRPHONE", jyrPhone + "");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -363,11 +364,18 @@ public class GuiHuanActivity extends BaseActivity {
                     rfidAdpter.notifyDataSetChanged();
                     rfidAdpter.initmap();
                     tv_count.setText(String.valueOf(listEPC.size()));
+                } else {
+                    Toast.makeText(this, "请先扫码获得档案", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.bt_qingkong:
-                listEPC.clear();
-                rfidAdpter.notifyDataSetChanged();
+//               listEPC.clear();
+                if (listEPC.size() > 0) {
+                    if (!st_saoma.isChecked()) {
+                        rfidAdpter.selectmap();
+                        rfidAdpter.notifyDataSetChanged();
+                    }
+                }
                 break;
         }
     }
@@ -405,5 +413,8 @@ public class GuiHuanActivity extends BaseActivity {
 
     @Override
     public void setdata(String data, int requestcode) {
+        if (data != null && !"".equals(data))
+            Toast.makeText(GuiHuanActivity.this, data + "条数据已归还！", Toast.LENGTH_LONG).show();
+        shanchu();
     }
 }

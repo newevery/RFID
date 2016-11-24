@@ -134,7 +134,7 @@
             android:id="@+id/bt_qingkong"
             android:layout_width="0dp"
             android:background="@drawable/textviewbag"
-            android:text="清空"
+            android:text="全选"
             android:layout_height="match_parent"
             android:layout_weight="1" />
 

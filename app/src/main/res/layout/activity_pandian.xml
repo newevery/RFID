@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical"
 
-    tools:context=".MainActivity">
+    tools:context=".activity.PanDianActivity">
 
     <include layout="@layout/layout_title" />
 
@@ -86,10 +86,9 @@
             android:layout_toRightOf="@+id/tv1"
             android:background="@drawable/textviewbag"
             android:gravity="center"
-            android:hint="点击选择盘点的库"
+            android:hint="请选择盘点方式"
             android:textColor="@color/black"
             android:textSize="15sp" />
-
 
     </RelativeLayout>
 

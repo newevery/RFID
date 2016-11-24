@@ -61,7 +61,6 @@ public class XiangqingActivity extends BaseActivity {
 //        EPC = "2015-DQ11-Y-3,211832,218688,";
 //        Intent intent = this.getIntent();
         EPC = getIntent().getStringExtra("EPC");
-
 //        this.EPC = (String) intent.getSerializableExtra("EPC");
 
         loginUser_id = (String) SpUtils.get(this, "userid", "1");

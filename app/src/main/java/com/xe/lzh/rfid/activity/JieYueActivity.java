@@ -73,7 +73,7 @@ public class JieYueActivity extends BaseActivity {
     private boolean startFlag = false;
     private boolean runflag = false;
     private ArrayList<EpcModel> listEPC;
-    private UhfReader uhfReader;
+    private UhfReader uhfReader = null;
     private RfidAdpter rfidAdpter;
 
     private String state = "-10";
@@ -104,7 +104,7 @@ public class JieYueActivity extends BaseActivity {
         lv_data.addHeaderView(view, null, false);
         loginUser_id = (String) SpUtils.get(this, "userid", "1");
         loginUser_name = (String) SpUtils.get(this, "username", "操作人");
-        tv_name.setText("欢迎您，"+loginUser_name);
+        tv_name.setText("欢迎您，" + loginUser_name);
 
 
         st_saoma.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -130,10 +130,10 @@ public class JieYueActivity extends BaseActivity {
                     Thread inventoryThread = new InventoryThread();
                     inventoryThread.start();
                     Util.initSoundPool(JieYueActivity.this);
-                    Toast.makeText(JieYueActivity.this, "点击了开始", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(JieYueActivity.this, "点击了开始", Toast.LENGTH_SHORT).show();
                     startFlag = true;
                 } else {
-                    Toast.makeText(JieYueActivity.this, "点击了停止", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(JieYueActivity.this, "点击了停止", Toast.LENGTH_SHORT).show();
                     startFlag = false;
                 }
             }
@@ -249,7 +249,7 @@ public class JieYueActivity extends BaseActivity {
                         if (epcStr.equals(mEPC.getEPC())) {
                             epcTag.setCount(mEPC.getCount() + 1);
                             list.set(i, epcTag);//暂时未知用途
-                            list.add(epcTag);//测试用数据
+//                            list.add(epcTag);//测试用数据
                             break;
                         } else if (i == (list.size() - 1)) {
                             epcTag.setCount(1);
@@ -266,16 +266,19 @@ public class JieYueActivity extends BaseActivity {
             }
         });
     }
-//    点击空白区域 自动隐藏软键盘
+
+    //    点击空白区域 自动隐藏软键盘
     public boolean onTouchEvent(MotionEvent event) {
-    if(null != this.getCurrentFocus()){
-        /**
-         * 点击空白位置 隐藏软键盘
-         */
-        InputMethodManager mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        return mInputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+        if (null != this.getCurrentFocus()) {
+            /**
+             * 点击空白位置 隐藏软键盘
+             */
+            InputMethodManager mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            return mInputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+        }
+        return super.onTouchEvent(event);
     }
-    return super .onTouchEvent(event);}
+
     JSONObject jsonObjectJYR = new JSONObject();
 
     @Event(value = {R.id.bt_queding, R.id.bt_dengjiJYR, R.id.bt_shanchu, R.id.tv_yongtu, R.id.bt_qingkong})
@@ -284,8 +287,8 @@ public class JieYueActivity extends BaseActivity {
             case R.id.bt_queding:
                 if (TextUtils.isEmpty(jsonObjectJYR.toString())) {
                     Toast.makeText(JieYueActivity.this, "请先登记借阅人信息", Toast.LENGTH_SHORT).show();
-                }else if (listEPC.size()==0){
-                    Toast.makeText(this,"请先扫码",Toast.LENGTH_SHORT).show();
+                } else if (listEPC.size() == 0) {
+                    Toast.makeText(this, "请先扫码借阅", Toast.LENGTH_SHORT).show();
                 } else {
 //                    System.out.println(jsonObjectJYR.toString());
                     try {
@@ -309,11 +312,11 @@ public class JieYueActivity extends BaseActivity {
                                     return;
                                 }
 
-                                if (jsonObjectJYR.length()==0||TextUtils.isEmpty(jsonObjectJYR.getString("JYRNAME"))
+                                if (jsonObjectJYR.length() == 0 || TextUtils.isEmpty(jsonObjectJYR.getString("JYRNAME"))
                                         || TextUtils.isEmpty(jsonObjectJYR.getString("JYRNUM"))
                                         || TextUtils.isEmpty(jsonObjectJYR.getString("JYRSEC"))
                                         || TextUtils.isEmpty(jsonObjectJYR.getString("JYRPHONE"))) {
-                                    Toast.makeText(JieYueActivity.this,"请登记完整借阅人信息",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(JieYueActivity.this, "请登记完整借阅人信息", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
 //                            jsonObject.put("JYR", jieyueren);
@@ -338,7 +341,7 @@ public class JieYueActivity extends BaseActivity {
             case R.id.bt_dengjiJYR:
 //                startActivityForResult(new Intent(JieYueActivity.this, SaoMaActivity.class), 2);
 
-                AlertDialog.Builder jyrBuilder = new AlertDialog.Builder(this,R.style.Theme_Transparent);
+                AlertDialog.Builder jyrBuilder = new AlertDialog.Builder(this, R.style.Theme_Transparent);
 
 //                builder.setIcon(R.drawable.ic_launcher);
 //                jyrBuilder.setTitle("借阅人登记");
@@ -360,10 +363,10 @@ public class JieYueActivity extends BaseActivity {
                         String jyrPhone = etJYRPHONE.getText().toString();
                         btJYR.setText(jyrName);
                         try {
-                            jsonObjectJYR.put("JYRNAME", jyrName+"");
-                            jsonObjectJYR.put("JYRNUM", jyrNum+"");
-                            jsonObjectJYR.put("JYRSEC", jyrSec+"");
-                            jsonObjectJYR.put("JYRPHONE", jyrPhone+"");
+                            jsonObjectJYR.put("JYRNAME", jyrName + "");
+                            jsonObjectJYR.put("JYRNUM", jyrNum + "");
+                            jsonObjectJYR.put("JYRSEC", jyrSec + "");
+                            jsonObjectJYR.put("JYRPHONE", jyrPhone + "");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -408,8 +411,12 @@ public class JieYueActivity extends BaseActivity {
                 builder.show();
                 break;
             case R.id.bt_qingkong:
-                listEPC.clear();
-                rfidAdpter.notifyDataSetChanged();
+                if (listEPC.size() > 0) {
+                    if (!st_saoma.isChecked()) {
+                        rfidAdpter.selectmap();
+                        rfidAdpter.notifyDataSetChanged();
+                    }
+                }
                 break;
         }
     }
@@ -429,7 +436,6 @@ public class JieYueActivity extends BaseActivity {
         super.onPause();
         if (uhfReader != null) {
             runflag = false;
-            uhfReader.powerOff();
             uhfReader.close();
         }
     }

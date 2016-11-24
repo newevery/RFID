@@ -30,7 +30,8 @@ RFIDUtils {
     };
 
     //接口
-    public static String ip = "http://192.168.3.3:8080/android/";
+//    public static String ip = "http://172.23.39.9:8080/android/";
+    public static String ip = "http://192.168.3.4:8080/android/";
     public static String FINDDETAIL = ip + "findDetail.do";//查看详细的EPC信息
     public static String ALLKU = ip + "allKU.do";//从服务器读取所有的档案信息  按库盘点
     public static String SELECT = ip + "searchId.do";//查找指定档案号的档案   盘点时选择库号

@@ -103,6 +103,12 @@ public class RfidAdpter extends BaseAdapter {
             hashMap.put(i, false);
         }
     }
+    public void selectmap() {
+        hashMap = new HashMap<Integer, Boolean>();
+        for (int i = 0; i < data.size(); i++) {
+            hashMap.put(i, true);
+        }
+    }
 
     class ViewHolder {
         TextView XH;

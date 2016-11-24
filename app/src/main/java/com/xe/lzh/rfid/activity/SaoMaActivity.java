@@ -51,7 +51,7 @@ public class SaoMaActivity extends BaseActivity {
     private boolean startFlag = false;
     private boolean runflag = false;
     private ArrayList<EpcModel> listEPC;
-    public UhfReader uhfReader;
+    public UhfReader uhfReader=null;
     private RfidAdpter1 rfidAdpter1;
     private Thread inventoryThread;
     private int num;

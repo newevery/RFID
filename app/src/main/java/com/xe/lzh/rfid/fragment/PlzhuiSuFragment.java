@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.LayoutInflater;
@@ -15,7 +16,9 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.android.hdhe.uhf.reader.Tools;
@@ -29,6 +32,8 @@ import com.xe.lzh.rfid.Utils.SpUtils;
 import com.xe.lzh.rfid.Utils.Util;
 import com.xe.lzh.rfid.Utils.WordUtils;
 import com.xe.lzh.rfid.activity.BaseActivity;
+import com.xe.lzh.rfid.activity.PanDianActivity;
+import com.xe.lzh.rfid.activity.RukuActivity;
 import com.xe.lzh.rfid.activity.ZhuiSuActivity;
 import com.xe.lzh.rfid.adpter.PLZhuiSuAdapter;
 import com.xe.lzh.rfid.adpter.PanDianListAdapter;
@@ -53,17 +58,20 @@ import jxl.Workbook;
 public class PlzhuiSuFragment extends Fragment implements View.OnClickListener, HttpUtils.PostCallBack {
     private boolean startFlag = false;
     private boolean runflag = false;
-    public UhfReader uhfReader;
+    public UhfReader uhfReader=null;
     private Thread inventoryThread;
     private int num;
     private ListView pllistView;
     private PLZhuiSuAdapter plZhuiSuAdapter;
     private List<String> dhList;
-
+private EditText etdrboxnum;
+    private RadioGroup rgdaoru;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_plzhui_su, null);
+        rgdaoru= (RadioGroup) view.findViewById(R.id.rg_daoru);
+        etdrboxnum= (EditText) view.findViewById(R.id.et_drboxnum);
         //点击其他部位隐藏软键盘
         view.setOnTouchListener(new View.OnTouchListener() {
 
@@ -83,12 +91,11 @@ public class PlzhuiSuFragment extends Fragment implements View.OnClickListener, 
 
     private ListView plZSJG;
     private PanDianListAdapter panDianListAdapter;
-
+private String type="0";
     private Button btZhuiSu,btChaKu,btPLShanChu,btGuanBi;
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        view.findViewById(R.id.bt_daoru).setOnClickListener(this);
 //        view.findViewById(R.id.bt_qingkong).setOnClickListener(this);
         pllistView = (ListView) view.findViewById(R.id.pllistView);
         plZSJG = (ListView) view.findViewById(R.id.pllistViewjieguo);
@@ -117,7 +124,44 @@ public class PlzhuiSuFragment extends Fragment implements View.OnClickListener, 
         panDianListAdapter = new PanDianListAdapter(getActivity(), listEPC);
         plZSJG.setAdapter(panDianListAdapter);
 
+       rgdaoru .setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.et_daoru) {
+                    type = "1";
+                    if (uhfReader != null) {
+                        runflag = false;
+                        uhfReader.close();
+                    }
+                    etdrboxnum.setVisibility(View.GONE);
+                    btZhuiSu.setVisibility(View.GONE);
+                    btChaKu.setVisibility(View.VISIBLE);
+                    btPLShanChu.setVisibility(View.VISIBLE);
+                    btGuanBi.setVisibility(View.GONE);
+                    showFileChooser();
+                    if (dhList.size() != 0) {
+                        dhList.clear();
+                        plZhuiSuAdapter.notifyDataSetChanged();
+                    }
+                    plZSJG.setVisibility(View.GONE);
+                    pllistView.setVisibility(View.VISIBLE);
 
+                } else {
+                    type = "2";
+                    if (uhfReader != null) {
+                        runflag = false;
+                        uhfReader.close();
+                    }
+                    etdrboxnum.setVisibility(View.GONE);
+                    btZhuiSu.setVisibility(View.GONE);
+                    btChaKu.setVisibility(View.VISIBLE);
+                    btPLShanChu.setVisibility(View.VISIBLE);
+                    btGuanBi.setVisibility(View.GONE);
+                    etdrboxnum.setVisibility(View.VISIBLE);
+listEPC.clear();
+                }
+            }
+        });
     }
 private JSONArray js;
     public void doNetWork(RequestParams params, int requestcode) {
@@ -131,25 +175,33 @@ private JSONArray js;
         }
         System.out.println("doNetWork " + params.toString());
     }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (uhfReader != null) {
+            runflag = false;
+            uhfReader.close();
+        }
+    }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.bt_daoru:
-                btZhuiSu.setVisibility(View.GONE);
-                btChaKu.setVisibility(View.VISIBLE);
-                btPLShanChu.setVisibility(View.VISIBLE);
-                btGuanBi.setVisibility(View.GONE);
-                showFileChooser();
-                if (dhList.size() != 0) {
-                    dhList.clear();
-                    plZhuiSuAdapter.notifyDataSetChanged();
-                }
-                plZSJG.setVisibility(View.GONE);
-                pllistView.setVisibility(View.VISIBLE);
-
-
-                break;
+//            case R.id.bt_daoru:
+//                btZhuiSu.setVisibility(View.GONE);
+//                btChaKu.setVisibility(View.VISIBLE);
+//                btPLShanChu.setVisibility(View.VISIBLE);
+//                btGuanBi.setVisibility(View.GONE);
+//                showFileChooser();
+//                if (dhList.size() != 0) {
+//                    dhList.clear();
+//                    plZhuiSuAdapter.notifyDataSetChanged();
+//                }
+//                plZSJG.setVisibility(View.GONE);
+//                pllistView.setVisibility(View.VISIBLE);
+//
+//
+//                break;
 //            case R.id.bt_zhuisu:
 //                plZSJG.setVisibility(View.VISIBLE);
 //                pllistView.setVisibility(View.GONE);
@@ -198,54 +250,63 @@ private JSONArray js;
 //                plZhuiSuAdapter.notifyDataSetChanged();
 //                break;
             case R.id.bt_chaku:
-                btZhuiSu.setVisibility(View.VISIBLE);
-                btChaKu.setVisibility(View.GONE);
-                btPLShanChu.setVisibility(View.GONE);
-                btGuanBi.setVisibility(View.VISIBLE);
 
-                pllistView.setVisibility(View.GONE);
-                List<String> list = new ArrayList<>();
-                if (dhList.size() > 0) {
-                    HashMap<Integer, Boolean> map = plZhuiSuAdapter.getHashMap();
-                    for (Integer key : map.keySet()) {
-                        if (map.get(key)) {
-                            list.add(dhList.get(key));
+                    btZhuiSu.setVisibility(View.VISIBLE);
+                    btChaKu.setVisibility(View.GONE);
+                    btPLShanChu.setVisibility(View.GONE);
+                    btGuanBi.setVisibility(View.VISIBLE);
+                    pllistView.setVisibility(View.GONE);
+                    plZSJG.setVisibility(View.VISIBLE);
+                    pllistView.setVisibility(View.GONE);
+                if ("1".equals(type)){
+                    List<String> list = new ArrayList<>();
+                    if (dhList.size() > 0) {
+                        HashMap<Integer, Boolean> map = plZhuiSuAdapter.getHashMap();
+                        for (Integer key : map.keySet()) {
+                            if (map.get(key)) {
+                                list.add(dhList.get(key));
+                            }
                         }
+                    }else {
+                        Toast.makeText(getActivity(),"请导入excel",Toast.LENGTH_SHORT).show();
+                        etdrboxnum.setVisibility(View.GONE);
+                        btZhuiSu.setVisibility(View.GONE);
+                        btChaKu.setVisibility(View.VISIBLE);
+                        btPLShanChu.setVisibility(View.VISIBLE);
+                        btGuanBi.setVisibility(View.GONE);
+                        etdrboxnum.setVisibility(View.VISIBLE);
+                        return;
                     }
-                }
+                    try {
+                        js = new JSONArray();
+                        for (int i = 0; i < list.size(); i++) {
+                            js.put(new JSONObject().put("DH", list.get(i).toString()));
+                        }
+                        RequestParams params = new RequestParams(RFIDUtils.ZHUISU);
+                        params.addBodyParameter("dhMap", js.toString());
+                        System.out.println("danghao " + js.toString());
 
-                plZSJG.setVisibility(View.VISIBLE);
-                pllistView.setVisibility(View.GONE);
-                onSuccess("", 0);
-                num = (int) SpUtils.get(getActivity(), "saoma", 25);
-                uhfReader = UhfReader.getInstance();
-                uhfReader.setOutputPower(num);
-                uhfReader.setWorkArea(1);
-                if (uhfReader != null) {
-                    runflag = true;
-                    startFlag = true;
-                }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-//                inventoryThread = new InventoryThread();
-//                inventoryThread.start();
-//                Util.initSoundPool(getActivity());
-                try {
-                     js = new JSONArray();
-                    for (int i = 0; i < list.size(); i++) {
-                        js.put(new JSONObject().put("DH", list.get(i).toString()));
+                        doNetWork(params, 0);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                    RequestParams params = new RequestParams(RFIDUtils.ZHUISU);
-                    params.addBodyParameter("dhMap", js.toString());
-                    System.out.println("danghao " + js.toString());
+                }else if ("2".equals(type)){
+                    String boxNum = etdrboxnum.getText().toString();
+                    if (TextUtils.isEmpty(boxNum)) {
+                        Toast.makeText(getActivity(), "请输入箱号", Toast.LENGTH_SHORT).show();
+                        etdrboxnum.setVisibility(View.GONE);
+                        btZhuiSu.setVisibility(View.GONE);
+                        btChaKu.setVisibility(View.VISIBLE);
+                        btPLShanChu.setVisibility(View.VISIBLE);
+                        btGuanBi.setVisibility(View.GONE);
+                        etdrboxnum.setVisibility(View.VISIBLE);
 
-                    doNetWork(params, 0);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    } else {
+                        RequestParams params = new RequestParams(RFIDUtils.AXPANDIAN);
+                        params.addBodyParameter("BOXNUM", String.valueOf(boxNum));
+                        System.out.println("按箱盘点 该箱数据 " + String.valueOf(boxNum));
+                        doNetWork(params, 0);
+                    }
                 }
                 break;
             case R.id.bt_guanbi:
@@ -270,7 +331,6 @@ private JSONArray js;
                 }
                 System.out.println(listEPC.size());
                 panDianListAdapter.notifyDataSetChanged();
-
                 plZSJG.setVisibility(View.VISIBLE);
                 pllistView.setVisibility(View.GONE);
 //                onSuccess("", 0);
@@ -369,7 +429,13 @@ private JSONArray js;
 
     public void showFileChooser() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("xls/*");
+
+//        intent.addCategory("android.intent.category.DEFAULT");
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        Uri uri = Uri.fromFile(file);
+//        intent.setDataAndType(uri, "application/vnd.ms-excel");
+//        intent.setType("xls/*");
+        intent.setType("application/vnd.ms-excel");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         try {
             startActivityForResult(Intent.createChooser(intent, "请选择要导入的Excel"), 1);
@@ -441,6 +507,7 @@ private JSONArray js;
     public void setdata(String data, int requestcod) {
         if (data != null && !"".equals(data)) {
             try {
+                System.out.println("aaaaaaaa  "+data);
                 listEPC.clear();
                 JSONArray jsonArray = new JSONArray(data);
                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -472,6 +539,7 @@ private JSONArray js;
                         listEPC.add(epcTag);
                     }
 
+                    System.out.println(listEPC.toString());
                 }
 
                 panDianListAdapter.notifyDataSetChanged();
@@ -480,12 +548,18 @@ private JSONArray js;
             }
         } else {
             Toast.makeText(getActivity(), "此库内无数据", Toast.LENGTH_LONG).show();
+            etdrboxnum.setVisibility(View.GONE);
+            btZhuiSu.setVisibility(View.GONE);
+            btChaKu.setVisibility(View.VISIBLE);
+            btPLShanChu.setVisibility(View.VISIBLE);
+            btGuanBi.setVisibility(View.GONE);
+            etdrboxnum.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
     public void onFailture(Throwable throwable, boolean b, int requestcode) {
-
+Toast.makeText(getActivity(),"服务器异常",Toast.LENGTH_SHORT).show();
     }
 
 
