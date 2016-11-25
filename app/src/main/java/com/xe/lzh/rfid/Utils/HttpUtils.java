@@ -1,7 +1,10 @@
 package com.xe.lzh.rfid.Utils;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.widget.Toast;
+
+import com.xe.lzh.rfid.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,7 +38,7 @@ public class HttpUtils {
     }
 
     public void dopost(final RequestParams params, int requestcode, final Context context) {
-        loadingDialog = LoadingDialog.createDialog(context);
+        loadingDialog =LoadingDialog.createDialog(context);
         loadingDialog.show();
         this.irequestcode = requestcode;
 
@@ -51,9 +54,11 @@ public class HttpUtils {
 
             @Override
             public void onError(Throwable throwable, boolean b) {
+
                 postcallback.onFailture(throwable, b, irequestcode);
                 if (loadingDialog != null && loadingDialog.isShowing()) {
                     loadingDialog.dismiss();
+                    Toast.makeText(context, "连接服务器失败", Toast.LENGTH_SHORT).show();
                 }
             }
 

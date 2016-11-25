@@ -23,7 +23,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="导入excel追溯"
+                android:text="导入excel"
                 android:textColor="@color/black" />
 
             <RadioButton
@@ -33,7 +33,7 @@
                 android:layout_gravity="right"
                 android:layout_marginLeft="10dp"
                 android:layout_weight="1"
-                android:text="整箱追溯"
+                android:text="输入箱号"
                 android:textColor="@color/black" />
         </RadioGroup>
 
