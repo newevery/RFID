@@ -1,25 +1,18 @@
 package com.xe.lzh.rfid.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -112,26 +105,34 @@ public class JieYueActivity extends BaseActivity {
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
                 if (isChecked) {
-                    num = (int) SpUtils.get(JieYueActivity.this, "jieyue", 25);
+
                     rfidAdpter = new RfidAdpter(listEPC, JieYueActivity.this);
                     lv_data.setAdapter(rfidAdpter);
-                    uhfReader = UhfReader.getInstance();
-                    uhfReader.setOutputPower(num);
-                    uhfReader.setWorkArea(1);
-                    if (uhfReader != null) {
-                        runflag = true;
-                    }
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    Thread inventoryThread = new InventoryThread();
-                    inventoryThread.start();
-                    Util.initSoundPool(JieYueActivity.this);
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            num = (int) SpUtils.get(JieYueActivity.this, "guihuan", 25);
+                            uhfReader = UhfReader.getInstance();
+                            uhfReader.setOutputPower(num);
+                            uhfReader.setWorkArea(1);
+                            if (uhfReader != null) {
+                                runflag = true;
+                            }
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            Thread inventoryThread = new InventoryThread();
+                            inventoryThread.start();
+                            Util.initSoundPool(JieYueActivity.this);
 //                    Toast.makeText(JieYueActivity.this, "点击了开始", Toast.LENGTH_SHORT).show();
-                    startFlag = true;
+                            startFlag = true;
+                        }
+                    }).start();
+
                 } else {
 //                    Toast.makeText(JieYueActivity.this, "点击了停止", Toast.LENGTH_SHORT).show();
                     startFlag = false;

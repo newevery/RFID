@@ -3,18 +3,15 @@ package com.xe.lzh.rfid.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.os.Bundle;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -26,15 +23,10 @@ import com.android.hdhe.uhf.reader.UhfReader;
 import com.xe.lzh.rfid.Model.EpcModel;
 import com.xe.lzh.rfid.R;
 import com.xe.lzh.rfid.Utils.HttpUtils;
-import com.xe.lzh.rfid.Utils.LogUtils;
 import com.xe.lzh.rfid.Utils.RFIDUtils;
 import com.xe.lzh.rfid.Utils.SpUtils;
 import com.xe.lzh.rfid.Utils.Util;
 import com.xe.lzh.rfid.Utils.WordUtils;
-import com.xe.lzh.rfid.activity.BaseActivity;
-import com.xe.lzh.rfid.activity.PanDianActivity;
-import com.xe.lzh.rfid.activity.RukuActivity;
-import com.xe.lzh.rfid.activity.ZhuiSuActivity;
 import com.xe.lzh.rfid.adpter.PLZhuiSuAdapter;
 import com.xe.lzh.rfid.adpter.PanDianListAdapter;
 
@@ -48,7 +40,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -334,23 +325,28 @@ private JSONArray js;
                 plZSJG.setVisibility(View.VISIBLE);
                 pllistView.setVisibility(View.GONE);
 //                onSuccess("", 0);
-                num = (int) SpUtils.get(getActivity(), "saoma", 25);
-                uhfReader = UhfReader.getInstance();
-                uhfReader.setOutputPower(num);
-                uhfReader.setWorkArea(1);
-                if (uhfReader != null) {
-                    runflag = true;
-                    startFlag = true;
-                }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                inventoryThread = new InventoryThread();
-                inventoryThread.start();
-                Util.initSoundPool(getActivity());
+               new Thread(new Runnable() {
+                   @Override
+                   public void run() {
+                       num = (int) SpUtils.get(getActivity(), "saoma", 25);
+                       uhfReader = UhfReader.getInstance();
+                       uhfReader.setOutputPower(num);
+                       uhfReader.setWorkArea(1);
+                       if (uhfReader != null) {
+                           runflag = true;
+                           startFlag = true;
+                       }
+                       try {
+                           Thread.sleep(100);
+                       } catch (InterruptedException e) {
+                           // TODO Auto-generated catch block
+                           e.printStackTrace();
+                       }
+                       inventoryThread = new InventoryThread();
+                       inventoryThread.start();
+                       Util.initSoundPool(getActivity());
+                   }
+               }).start();
                 break;
         }
     }

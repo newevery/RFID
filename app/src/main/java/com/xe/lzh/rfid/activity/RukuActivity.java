@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -100,24 +99,31 @@ public class RukuActivity extends BaseActivity {
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
                 if (isChecked) {
-                    uhfReader = UhfReader.getInstance();
-                    uhfReader.setOutputPower(num);
-                    uhfReader.setWorkArea(1);
-                    if (uhfReader != null) {
-                        runflag = true;
-                    }
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    inventoryThread = new InventoryThread();
-                    inventoryThread.start();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            num = (int) SpUtils.get(RukuActivity.this, "ruku", 25);
+                            uhfReader = UhfReader.getInstance();
+                            uhfReader.setOutputPower(num);
+                            uhfReader.setWorkArea(1);
+                            if (uhfReader != null) {
+                                runflag = true;
+                            }
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            inventoryThread = new InventoryThread();
+                            inventoryThread.start();
 
-                    startFlag = true;
-                    //初始化声音池
-                    Util.initSoundPool(RukuActivity.this);
+                            startFlag = true;
+                            //初始化声音池
+                            Util.initSoundPool(RukuActivity.this);
+                        }
+                    }).start();
+
                 } else {
                     startFlag = false;
                 }
@@ -129,7 +135,7 @@ public class RukuActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         settext("入库");
-        num = (int) SpUtils.get(this, "ruku", 25);
+
         rfidAdpter = new RfidAdpter(listEPC, this);
         lv_data.setAdapter(rfidAdpter);
 

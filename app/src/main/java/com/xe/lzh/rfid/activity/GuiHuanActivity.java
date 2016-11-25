@@ -21,7 +21,6 @@ import com.xe.lzh.rfid.Model.EpcModel;
 import com.xe.lzh.rfid.R;
 import com.xe.lzh.rfid.Utils.LogUtils;
 import com.xe.lzh.rfid.Utils.RFIDUtils;
-
 import com.xe.lzh.rfid.Utils.SpUtils;
 import com.xe.lzh.rfid.Utils.Util;
 import com.xe.lzh.rfid.adpter.RfidAdpter;
@@ -39,7 +38,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -91,25 +89,32 @@ public class GuiHuanActivity extends BaseActivity {
                                          boolean isChecked) {
                 if (isChecked) {
 //                    Toast.makeText(GuiHuanActivity.this, "点击了开始", Toast.LENGTH_SHORT).show();
-                    num = (int) SpUtils.get(GuiHuanActivity.this, "guihuan", 25);
+
                     lv_data.setAdapter(rfidAdpter);
-                    uhfReader = UhfReader.getInstance();
-                    uhfReader.setOutputPower(num);
-                    uhfReader.setWorkArea(1);
-                    if (uhfReader != null) {
-                        runflag = true;
-                    }
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    Thread inventoryThread = new InventoryThread();
-                    inventoryThread.start();
-                    //初始化声音池
-                    Util.initSoundPool(GuiHuanActivity.this);
-                    startFlag = true;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            num = (int) SpUtils.get(GuiHuanActivity.this, "guihuan", 25);
+                            uhfReader = UhfReader.getInstance();
+                            uhfReader.setOutputPower(num);
+                            uhfReader.setWorkArea(1);
+                            if (uhfReader != null) {
+                                runflag = true;
+                            }
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            Thread inventoryThread = new InventoryThread();
+                            inventoryThread.start();
+                            //初始化声音池
+                            Util.initSoundPool(GuiHuanActivity.this);
+                            startFlag = true;
+                        }
+                    }).start();
+
                 } else {
 //                    Toast.makeText(GuiHuanActivity.this, "点击了停止", Toast.LENGTH_SHORT).show();
                     startFlag = false;

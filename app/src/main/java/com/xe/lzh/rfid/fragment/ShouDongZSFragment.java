@@ -111,7 +111,8 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.textView3:
-                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE); imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 String str = editTexts.get(editTexts.size() - 1).getText().toString();
 //                String str = et_epc.getText().toString();
                 if (!TextUtils.isEmpty(str)) {
@@ -134,28 +135,28 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
 
                 break;
             case R.id.bt_chaku:
-                    btChaku.setVisibility(View.GONE);
-                    btChongShu.setVisibility(View.VISIBLE);
-                    btZhuiSu.setVisibility(View.VISIBLE);
-                    btGuaBi.setVisibility(View.GONE);
+                btChaku.setVisibility(View.GONE);
+                btChongShu.setVisibility(View.VISIBLE);
+                btZhuiSu.setVisibility(View.VISIBLE);
+                btGuaBi.setVisibility(View.GONE);
 //                onSuccess("", 0);//测试
-                    svZhuiSu.setVisibility(View.GONE);
-                    shouDongZS.setVisibility(View.GONE);
-                    shouDongZhuiSu.setVisibility(View.GONE);
-                    lvZhuiSu.setVisibility(View.VISIBLE);
+                svZhuiSu.setVisibility(View.GONE);
+                shouDongZS.setVisibility(View.GONE);
+                shouDongZhuiSu.setVisibility(View.GONE);
+                lvZhuiSu.setVisibility(View.VISIBLE);
 //                获取本地输入的档号
-                    System.out.println(editTexts.size() + "SSSS");
+                System.out.println(editTexts.size() + "SSSS");
 
-                    for (int i = 0; i < editTexts.size(); i++) {
-                        String shuiruDh = editTexts.get(i).getText().toString();
-                        dhList.add(shuiruDh);
-                        System.out.println("输入 " + shuiruDh);
-                    }
+                for (int i = 0; i < editTexts.size(); i++) {
+                    String shuiruDh = editTexts.get(i).getText().toString();
+                    dhList.add(shuiruDh);
+                    System.out.println("输入 " + shuiruDh);
+                }
 
-                    RequestParams params = new RequestParams(RFIDUtils.ZHUISU);
-                    params.addBodyParameter("DH", dhList.toString());
-                    System.out.println("danghao " + dhList.toString());
-                    doNetWork(params, 0);
+                RequestParams params = new RequestParams(RFIDUtils.ZHUISU);
+                params.addBodyParameter("DH", dhList.toString());
+                System.out.println("danghao " + dhList.toString());
+                doNetWork(params, 0);
                 break;
             case R.id.bt_chongshu:
                 btChaku.setVisibility(View.VISIBLE);
@@ -214,25 +215,30 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
                 if (panDianListAdapter != null) {
                     panDianListAdapter.notifyDataSetChanged();
                 }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        num = (int) SpUtils.get(getActivity(), "saoma", 25);
+                        uhfReader = UhfReader.getInstance();
+                        uhfReader.setOutputPower(num);
+                        uhfReader.setWorkArea(1);
+                        if (uhfReader != null) {
+                            runflag = true;
+                            startFlag = true;
+                        }
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        inventoryThread = new InventoryThread();
+                        inventoryThread.start();
+                        Util.initSoundPool(getActivity());
+                    }
+                }).start();
 
 
-                num = (int) SpUtils.get(getActivity(), "saoma", 25);
-                uhfReader = UhfReader.getInstance();
-                uhfReader.setOutputPower(num);
-                uhfReader.setWorkArea(1);
-                if (uhfReader != null) {
-                    runflag = true;
-                    startFlag = true;
-                }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                inventoryThread = new InventoryThread();
-                inventoryThread.start();
-                Util.initSoundPool(getActivity());
                 break;
         }
 
