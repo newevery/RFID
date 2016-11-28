@@ -131,8 +131,6 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
                 } else {
                     Toast.makeText(getActivity(), "档号不能为空", Toast.LENGTH_SHORT).show();
                 }
-
-
                 break;
             case R.id.bt_chaku:
                 btChaku.setVisibility(View.GONE);
@@ -145,7 +143,6 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
                 shouDongZhuiSu.setVisibility(View.GONE);
                 lvZhuiSu.setVisibility(View.VISIBLE);
 //                获取本地输入的档号
-                System.out.println(editTexts.size() + "SSSS");
 
                 for (int i = 0; i < editTexts.size(); i++) {
                     String shuiruDh = editTexts.get(i).getText().toString();
@@ -153,10 +150,14 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
                     System.out.println("输入 " + shuiruDh);
                 }
 
-                RequestParams params = new RequestParams(RFIDUtils.ZHUISU);
-                params.addBodyParameter("DH", dhList.toString());
-                System.out.println("danghao " + dhList.toString());
-                doNetWork(params, 0);
+                if (!TextUtils.isEmpty(dhList.get(0).toString())) {
+                    RequestParams params = new RequestParams(RFIDUtils.ZHUISU);
+                    params.addBodyParameter("DH", dhList.toString());
+                    System.out.println("danghao " + dhList.toString());
+                    doNetWork(params, 0);
+                } else {
+                    Toast.makeText(getActivity(), "输入为空，请点击重新输入", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.bt_chongshu:
                 btChaku.setVisibility(View.VISIBLE);
@@ -324,6 +325,14 @@ public class ShouDongZSFragment extends Fragment implements View.OnClickListener
             System.out.println(" PLZS " + k.getValueStr() + "  " + k.key);
         }
         System.out.println("doNetWork " + params.toString());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (uhfReader != null) {
+            runflag = false;
+        }
     }
 
     @Override

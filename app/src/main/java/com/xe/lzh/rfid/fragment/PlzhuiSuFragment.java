@@ -176,6 +176,13 @@ private JSONArray js;
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if (uhfReader != null) {
+            runflag = false;}
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
 //            case R.id.bt_daoru:

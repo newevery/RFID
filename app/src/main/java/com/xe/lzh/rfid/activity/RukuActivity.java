@@ -232,8 +232,6 @@ public class RukuActivity extends BaseActivity {
         super.onPause();
         if (uhfReader != null) {
             runflag = false;
-            uhfReader.close();
-
         }
 
     }

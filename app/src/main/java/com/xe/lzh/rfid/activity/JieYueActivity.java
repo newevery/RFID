@@ -158,6 +158,8 @@ public class JieYueActivity extends BaseActivity {
 //        });
     }
 
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -437,7 +439,6 @@ public class JieYueActivity extends BaseActivity {
         super.onPause();
         if (uhfReader != null) {
             runflag = false;
-            uhfReader.close();
         }
     }
 

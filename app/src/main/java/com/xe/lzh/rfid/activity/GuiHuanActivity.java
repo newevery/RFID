@@ -241,7 +241,6 @@ public class GuiHuanActivity extends BaseActivity {
         super.onPause();
         if (uhfReader != null) {
             runflag = false;
-            uhfReader.close();
         }
     }
 
