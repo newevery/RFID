@@ -88,7 +88,7 @@ public class XiangqingActivity extends BaseActivity {
     private void doNet() {
         System.out.println("EPC "+EPC);
         RequestParams params = new RequestParams(RFIDUtils.FINDDETAIL);
-        params.addBodyParameter("EPC", "2015-DQ11-Y-3,125142908,125142908,");
+        params.addBodyParameter("EPC", "2007-JX19.17-D30-1,193960,5164396,");
         //2011-JX19.17-Y-3,341849,370225446,2007-JX19.17-D30-1q,341849,5164396,2007-JX19.17-D30-21,341849,5164396,2007-JX19.17-D30-2,341849,5164396,
         //217693,？~T？？1,193250,   "2015-DQ11-Y-3,5164396,341849,
         doNetWork(params,0);
@@ -103,19 +103,20 @@ public class XiangqingActivity extends BaseActivity {
                     JSONObject js = new JSONObject(data);
                     danghao.setText(js.getString("DH"));
                     System.out.println(js.toString());
-                    if (!js.getString("state").equals("1")) {
-                        jieyueren.setText(js.getString("jyrname"));
+                    if (js.getString("state").equals("1")) {
+                        ll_jyr.setVisibility(View.VISIBLE);
+                        jieyueren.setText(js.getString("JYR"));
                     } else {
                         ll_jyr.setVisibility(View.GONE);
                     }
                     zhuangtai.setText(ZhuangTaiUtils.transOrderStatusCode(Integer.parseInt(js.getString("state"))));
-                    kuhao.setText(String.valueOf(js.get("GROUPID")));
+//                    kuhao.setText(String.valueOf(js.get("GROUPID")));
+                    kuhao.setText(js.getString("ZRZ"));
                     tv_ztm.setText(js.getString("ZTM"));
                     String strdate = js.getString("UPDATETIME");
 //                    System.out.println("sds"+strdate);
 //                    Date date = RFIDUtils.sdf1.parse(strdate);
 //                    String format = RFIDUtils.sdf.format(date);
-                    System.out.println(strdate.substring(0, strdate.length() - 2));
                     shijian.setText(strdate.substring(0, strdate.length() - 2));
                 } catch (JSONException e) {
                     e.printStackTrace();

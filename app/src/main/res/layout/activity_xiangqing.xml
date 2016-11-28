@@ -23,7 +23,7 @@
                 android:layout_marginLeft="40dp"
 
                 android:gravity="center"
-                android:text="@string/kuhao"
+                android:text="部门："
                 android:textColor="@color/black"
                 android:textSize="15sp" />
 
